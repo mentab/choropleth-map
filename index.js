@@ -1,10 +1,8 @@
-const w = 800;
-const h = 800;
+const w = 1000;
+const h = 600;
 const m = 50;
 
-const projection = d3.geoMercator();
-
-const path = d3.geoPath().projection(projection);
+const path = d3.geoPath();
 
 const content = d3.select('body');
 
@@ -16,15 +14,13 @@ Promise.all([
 	d3.json('https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/counties.json'),
 	d3.json('https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/for_user_education.json')
 ]).then(([dataCounties, dataEducation]) => {
-
-	console.log(dataCounties);
-	console.log(dataEducation);
-
 	d3.select('svg')
 		.selectAll('path')
 		.data(topojson.feature(dataCounties, dataCounties.objects.counties).features)
 		.enter()
 		.append('path')
 		.attr('d', path)
-		.attr('fill', 'red');
+		.attr('class', 'county')
+		.attr('data-fips', d => d.id)
+		.attr('data-education', d => 'data-education');
 });
