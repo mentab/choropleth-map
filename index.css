@@ -10,6 +10,28 @@ body
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	background: white;
 }
+.container
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.padding-box
+{
+	padding: 50px;
+	background: white;
+	box-shadow: 2px 2px 9px black;
+}
+
+.content
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
 
 #tooltip
 {
@@ -20,3 +42,23 @@ body
 	border: 1px black solid;
 	background: white;
 }
+
+#legend
+{
+	font-size: 9px;
+}
+
+#legend-axis line
+{
+  stroke: white;
+}
+
+#legend-axis path
+{
+  stroke: white;
+}
+
+#legend-axis text
+{
+  fill: white;
+}  

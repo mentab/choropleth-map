@@ -4,7 +4,7 @@ const m = 50;
 
 const path = d3.geoPath();
 
-const content = d3.select('body');
+const content = d3.select('.content');
 
 content.append('h1')
 	.attr('id', 'title')
@@ -30,21 +30,24 @@ Promise.all([
 	d3.json('https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/counties.json'),
 	d3.json('https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/for_user_education.json')
 ]).then(([dataCounties, dataEducation]) => {
+	countiesEducationData = {};
 
-	data.map(function(d) { d.id = d.values.id; });
+	dataCounties.objects.counties.geometries.forEach(data => {
+		countiesEducationData[data.id] = dataEducation.find(currentDataEducation => currentDataEducation.fips === data.id);
+	});
 
 	const min = d3.min(dataEducation, d => d.bachelorsOrHigher);
 	const max = d3.max(dataEducation, d => d.bachelorsOrHigher);
 
-	const colorArray = [...Array(4)];
+	const colorArray = [...Array(9)];
 	const colors = colorArray.map((color, index) => (index + 1) * (max - min) / (colorArray.length - 1));
 
-	const colorScale = d3.scaleSequential(d3.interpolateRainbow)
+	const colorScale = d3.scaleSequential(d3.interpolateBlues)
 		.domain(d3.extent(dataEducation, d => d.bachelorsOrHigher));
 
 	const legendScale = d3.scaleBand()
 		.domain(colors)
-		.range([0, 400]);
+		.range([350, 650]);
 
 	d3.select('#legend')
 		.selectAll('rect')
@@ -64,18 +67,18 @@ Promise.all([
 		.append('path')
 		.attr('d', path)
 		.attr('class', 'county')
-		.attr('fill', d => colorScale(dataEducation.find(currentDataEducation => currentDataEducation.fips === d.id).bachelorsOrHigher))
+		.attr('fill', d => colorScale(countiesEducationData[d.id].bachelorsOrHigher))
 		.attr('data-fips', d => d.id)
 		.attr('data-education', d => {
-			return dataEducation.find(currentDataEducation => currentDataEducation.fips === d.id).bachelorsOrHigher;
+			return countiesEducationData[d.id].bachelorsOrHigher;
 		})
-		.on('mouseover', d => {
-			tooltip.attr('data-education', dataEducation.find(currentDataEducation => currentDataEducation.fips === d.id).bachelorsOrHigher)
+		.on('mouseover', function(d) {
+			tooltip.attr('data-education', countiesEducationData[d.id].bachelorsOrHigher)
 				.style('left', d3.event.pageX + 15 + 'px')
 				.style('top', d3.event.pageY - 25 +'px')
 				.style('transition', 'opacity .5s ease-out')
 				.style('opacity', .8)
-				.html(() => `<strong>Education</strong> : ${education.bachelorsOrHigher}%`);
+				.html(() => `<strong>Education</strong> : ${countiesEducationData[d.id].bachelorsOrHigher}%`);
 		})
 		.on('mouseout', function () {
 			tooltip.style('opacity', 0);
